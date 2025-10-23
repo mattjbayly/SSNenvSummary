@@ -14,9 +14,12 @@
 #'     \item{usrid}{Upstream reach ID (includes the reach itself).}
 #'   }
 #' @details
-#' This routine iteratively expands the set of upstream relationships via fast keyed joins
+#' This function iteratively expands the set of upstream relationships via fast keyed joins
 #' in **data.table**.  It first seeds each node as upstream of itself, adds all direct
 #' parents, then “peels back” generation by generation until no new pairs appear.
+#'
+#' If starting from the `SSN2` or `SSNBler` R packages use the `relationships.csv` table from
+#' the LSN (land scape network) folder.
 #'
 #' @examples
 #' library(data.table)

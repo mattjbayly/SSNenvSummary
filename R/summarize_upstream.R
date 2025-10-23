@@ -217,6 +217,12 @@ summarize_upstream <- function(net = NA,
       dat <- sf::st_transform(dat, utm_zone)
     }
 
+    # Make sure the rca_id column is present
+    if (!("rca_id" %in% colnames(dat))) {
+      print("rca_env_data must have an rca_id column. Run an intersection in GIS between your RCA polygons and the spatial layer of interest and then run summarize_upstream() afterwards with rca_env_data set to the product of your intersection.")
+      stop("See note.")
+    }
+
 
     # Polygon area coverage Calculate area as m2
     if (summary_type %in% c("percent_coverage", "weighted_percent_coverage")) {
