@@ -2,37 +2,58 @@
 % Please edit documentation in R/relationships_to_index.R
 \name{relationships_to_index}
 \alias{relationships_to_index}
-\title{Relationships table to Upstream reach ID Idex Table}
+\title{Relationships table to upstream reach index}
 \usage{
-relationships_to_index(rel)
+relationships_to_index(rel, materialize = TRUE)
 }
 \arguments{
-\item{rel}{A \code{data.table} or \code{data.frame} with two integer columns:
+\item{rel}{A \code{data.frame} or \code{data.table} with two integer-like columns:
 \describe{
-\item{fromedge}{The upstream reach ID.}
-\item{toedge}{The downstream reach ID.}
+\item{fromedge}{Upstream reach ID (source node).}
+\item{toedge}{Downstream reach ID (target node).}
 }}
+
+\item{materialize}{Logical. If \code{TRUE} (default), returns a flat two-column table
+with one row per \verb{(rid, usrid)} pair. If \code{FALSE}, returns a compact table with one
+row per \code{rid} and a list-column of upstream IDs.}
 }
 \value{
-A \code{data.table} with integer columns:
+A \code{data.table}.
 \describe{
-\item{rid}{Downstream reach ID.}
-\item{usrid}{Upstream reach ID (includes the reach itself).}
+\item{If \code{materialize = TRUE}:}{A two-column table with integer columns \code{rid} and \code{usrid}.}
+\item{If \code{materialize = FALSE}:}{A two-column table with integer column \code{rid} and list-column
+\code{usrid}, where each element is an integer vector of upstream reach IDs (including \code{rid}).}
 }
 }
 \description{
-Given a table of directed stream‐network edges (\code{fromedge} → \code{toedge}), this function
-summarizes each downstream reach (\code{rid}) every upstream reach ID (\code{usrid}), including itself.
+Computes the upstream (ancestor) reach IDs for each downstream reach in a directed
+stream network defined by edge relationships (\code{fromedge} \eqn{\rightarrow} \code{toedge}).
+The result is the transitive closure of the graph: for each reach (\code{rid}), all reaches
+that can flow into it (\code{usrid}) are returned, including the reach itself.
 }
 \details{
-This routine iteratively expands the set of upstream relationships via fast keyed joins
-in \strong{data.table}.  It first seeds each node as upstream of itself, adds all direct
-parents, then “peels back” generation by generation until no new pairs appear.
+This function is designed for large stream networks where a full upstream index is useful
+for fast joins and upstream aggregation (e.g., summing habitat metrics upstream of each reach).
+
+Internally, reach IDs are first re-indexed to a compact \verb{1..n} range for speed. Upstream sets
+are computed efficiently using a dynamic-programming pass over a topological ordering of the
+graph (i.e., assuming the directed network is acyclic as is typical for dendritic stream
+networks). Upstream membership is represented as a bitset, enabling fast set unions.
+
+If the directed network contains cycles, results may be slower and the interpretation of
+"upstream" may be ambiguous; consider checking for cycles prior to use.
 }
 \examples{
 library(data.table)
-rel <- data.table(fromedge = c(2, 3, 4, 9, 14, 15), toedge = c(1, 2, 2, 10, 10, 14))
-# For rid = 1, usrid will be 1,2,3,4; for rid = 2, usrid = 2,3,4; etc.
-relationships_to_index(rel)
+library(SSNenvSummary)
+rel <- data.table(fromedge = c(2, 3, 4, 9, 14, 15),
+                  toedge   = c(1, 2, 2, 10, 10, 14))
 
+# Flat (materialized) index
+idx <- relationships_to_index(rel, materialize = TRUE)
+idx[rid == 1]
+
+}
+\seealso{
+\code{\link[igraph]{topo_sort}}, \code{\link[igraph]{graph_from_data_frame}}
 }
