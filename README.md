@@ -21,6 +21,31 @@ The `summarize_upstream()` function calculates upstream accumulation values for 
 3. **Network index** (`data.frame`): A lookup table mapping each `rid` to all upstream `rca_id` values (use `relationships_to_index()` to generate this if starting from an existing SSN)
 4. **Environmental data** (`sf` or `data.frame`): Data to summarize, must include `rca_id` column
 
+
+### Building the Network Index
+
+We need a network index table that shows us which features are upstream and downstream of each other.
+
+If you don't have a pre-built network index, use `relationships_to_index()` to create one from edge relationships. The R package `SSNBler` produces an edge relationship table. I would recommend you use this from the `SSNBler` package and then import here.
+
+```r
+# edges_df should have 'from' and 'to' columns representing directed connections
+
+# Run SSNBler::lines_to_lsn() 
+# Then import the relationships.csv table
+# > head(relationships)
+#   fromedge toedge
+# 1        1    181
+# 2        2    162
+# 3        3     70
+
+# Then build the network index table from the relationships table
+network_index <- SSNenvSummary::relationships_to_index(relationships)
+
+```
+
+
+
 ### Step 1: Load Data
 
 ```r
@@ -155,11 +180,3 @@ us_elevation <- summarize_upstream(
 )
 ```
 
-## Building the Network Index
-
-If you don't have a pre-built network index, use `relationships_to_index()` to create one from edge relationships:
-
-```r
-# edges_df should have 'from' and 'to' columns representing directed connections
-network_index <- relationships_to_index(edges_df)
-```
