@@ -21,10 +21,10 @@
 #'   `"upstream_basin_elevation"`).
 #'
 #' @details
-#' The following summary types are available:
+#' The following summary types (`summary_type`) are available:
 #' - **total_upstream_area**
 #'   Calculates the sum of the area of the upstream RCA polygons.
-#'   Useful for total drainage area.
+#'   Useful for total drainage area and other basin‑scale metrics.
 #'
 #' - **percent_coverage**
 #'   Calculates the area of the environmental layer upstream divided by the total upstream basin area (km²/km²).
@@ -41,6 +41,15 @@
 #' - **area_weighted_mean**
 #'   Computes an area‑weighted mean of a continuous variable (e.g. elevation, temperature).
 #'   Requires `summary_field` to specify which variable to average.
+#'
+#' - **weighted_feature_count**
+#'   Counts the number of features upstream, references the `summary_field` for a weighted
+#'   count (i.e., the sum) and divides the derived upstream count by the basin area (count/km²).
+#'   Examples: number of upstream water licenses, divided by the basin area, weighted by the volume.
+#'
+#' - **min_rca, max_rca**
+#'   Get the minimum `min_rca` or maximum `max_rca` value in the upstream basin.
+#'   Be sure to provide an appropriate `summary_field` value for the calculation.
 #'
 #' @return
 #' A `data.frame` with the upstream summary values joined back to the stream network.
@@ -652,6 +661,8 @@ summarize_upstream <- function(net = NA,
 
     # Update variable name
     colnames(fsum)[colnames(fsum) == "coverage"] <- output_fieldname
+    colnames(fsum)[colnames(fsum) == "ussum_full"] <- "upstream_area_m2"
+    colnames(fsum)[colnames(fsum) == "ussum_metric"] <- "count"
 
     if(summary_type == "feature_count") {
       print("Count is in # meters squared")
@@ -661,7 +672,7 @@ summarize_upstream <- function(net = NA,
 
     # Export and return
     ret_obj <- as.data.frame(fsum)
-    ret_obj <- ret_obj[, c("rid", output_fieldname)]
+    ret_obj <- ret_obj[, c("rid", output_fieldname, "count", "upstream_area_m2")]
 
     return(ret_obj)
 

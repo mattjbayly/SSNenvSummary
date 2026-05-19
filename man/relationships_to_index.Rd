@@ -41,7 +41,7 @@ graph (i.e., assuming the directed network is acyclic as is typical for dendriti
 networks). Upstream membership is represented as a bitset, enabling fast set unions.
 
 If the directed network contains cycles, results may be slower and the interpretation of
-"upstream" may be ambiguous; consider checking for cycles prior to use.
+“upstream” may be ambiguous; consider checking for cycles prior to use.
 }
 \examples{
 library(data.table)

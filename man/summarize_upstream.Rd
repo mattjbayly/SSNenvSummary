@@ -48,11 +48,11 @@ A \code{data.frame} with the upstream summary values joined back to the stream n
 Accumulator function to calculate values upstream of each stream reach.
 }
 \details{
-The following summary types are available:
+The following summary types (\code{summary_type}) are available:
 \itemize{
 \item \strong{total_upstream_area}
 Calculates the sum of the area of the upstream RCA polygons.
-Useful for total drainage area.
+Useful for total drainage area and other basin‑scale metrics.
 \item \strong{percent_coverage}
 Calculates the area of the environmental layer upstream divided by the total upstream basin area (km²/km²).
 Useful for land‑cover metrics (e.g. \% agricultural land).
@@ -65,5 +65,12 @@ Examples: number of water licenses or stream crossings per unit area.
 \item \strong{area_weighted_mean}
 Computes an area‑weighted mean of a continuous variable (e.g. elevation, temperature).
 Requires \code{summary_field} to specify which variable to average.
+\item \strong{weighted_feature_count}
+Counts the number of features upstream, references the \code{summary_field} for a weighted
+count (i.e., the sum) and divides the derived upstream count by the basin area (count/km²).
+Examples: number of upstream water licenses, divided by the basin area, weighted by the volume.
+\item \strong{min_rca, max_rca}
+Get the minimum \code{min_rca} or maximum \code{max_rca} value in the upstream basin.
+Be sure to provide an appropriate \code{summary_field} value for the calculation.
 }
 }
