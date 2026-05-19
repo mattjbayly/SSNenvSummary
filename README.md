@@ -180,3 +180,33 @@ us_elevation <- summarize_upstream(
 )
 ```
 
+## Longitudinal Stream Profiles
+
+The `build_profile_data()` and `plot_profile()` functions create longitudinal elevation profiles from BCFWA streamlines. For each reach upstream of a given outlet, vertex elevations (Z coordinates) and cumulative upstream distances are extracted and combined into a single data.frame suitable for plotting.
+
+```r
+library(SSNenvSummary)
+library(sf)
+
+# Load streamlines (must have Z coordinates) and upstream network index
+strm <- st_read(system.file("extdata/Bertrand_Creek/strm.gpkg",
+                             package = "SSNenvSummary"))
+idx <- read.csv(system.file("extdata/Bertrand_Creek/line_network_us_index.csv",
+                             package = "SSNenvSummary"))
+
+# Build profile data for the watershed outlet
+prof <- build_profile_data(strm, idx, outlet_rid = 701656068)
+head(prof)
+#        dist elev       rid STREAM_ORDER GNIS_NAME
+# 1  0.000000   41 701656068            3      <NA>
+# 2  1.003821   41 701656068            3      <NA>
+# ...
+
+# Plot the longitudinal profile
+plot_profile(prof, theme = "light", show_names = FALSE)
+```
+
+![Longitudinal stream profile](./man/figures/fig04.png)
+
+Line darkness scales with stream order — the mainstem is most prominent while small headwater tributaries fade into the background. Three themes are available: `"dark"` (blue on black), `"light"` (grey on white), and `"bw"` (black on white, minimal). If the `geomtextpath` package is installed, named streams can be labelled directly on the profile lines with `show_names = TRUE`.
+

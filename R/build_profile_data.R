@@ -19,6 +19,22 @@
 #'     \item{GNIS_NAME}{Stream name (character, may be NA).}
 #'   }
 #'
+#' @examples
+#' strm <- sf::st_read(
+#'   system.file("extdata/Bertrand_Creek/strm.gpkg", package = "SSNenvSummary"),
+#'   quiet = TRUE
+#' )
+#' idx <- read.csv(
+#'   system.file("extdata/Bertrand_Creek/line_network_us_index.csv",
+#'               package = "SSNenvSummary")
+#' )
+#'
+#' prof <- build_profile_data(strm, idx, outlet_rid = 701656068)
+#' head(prof)
+#'
+#' # Plot the profile
+#' plot_profile(prof, theme = "light", show_names = FALSE)
+#'
 #' @export
 build_profile_data <- function(strm, us_index, outlet_rid) {
 
